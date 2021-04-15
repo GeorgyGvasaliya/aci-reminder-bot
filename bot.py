@@ -6,6 +6,12 @@ from datetime import datetime
 bot = telebot.TeleBot(token)
 
 
+@bot.message_handler(commands=['start', 'help'])
+def help_message(message):
+    bot.send_message(message.chat.id, 'Hi, this bot will remind you about QA and designers meetings.\n' +
+                     'Message will send 15 and 5 minutes before.\n' + 'You can cancel second message - just write "ok".')
+
+
 @bot.message_handler(content_types=['text'])
 def cancel_repeater(message):
     if message.text.lower() == 'ok' and DESIGN_EARLY <= datetime.today().strftime('%H:%M') < DESIGN_LATE:
@@ -14,12 +20,6 @@ def cancel_repeater(message):
     elif message.text.lower() == 'ok' and QA_EARLY <= datetime.today().strftime('%H:%M') < QA_LATE:
         bot.send_message(message.chat.id, 'Ok, repeating message will not send. See you next day(s)')
         scheduler.remove_job('qa_repeater')
-
-
-@bot.message_handler(commands=['start', 'help'])
-def help_message(message):
-    bot.send_message(message.chat.id, 'Hi, this bot will remind you about QA and designers meetings.\n' +
-                     'Message will send 15 and 5 minutes before.\n' + 'You can cancel second message - just write "ok".')
 
 
 def designers_message_reminder():
